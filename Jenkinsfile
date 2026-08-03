@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         AWS_REGION = "ap-south-1"
-        AWS_ACCOUNT_ID = "683745271325"
+        AWS_ACCOUNT_ID = "278820798399"
         ECR_REPOSITORY = "stockpilot-dev-backend"
         IMAGE_NAME = "stockpilot-backend"
         IMAGE_TAG = "${BUILD_NUMBER}"

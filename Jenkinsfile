@@ -1,6 +1,6 @@
 pipeline {
     agent any
-
+    
     environment {
         AWS_REGION = "ap-south-1"
         AWS_ACCOUNT_ID = "683745271325"
@@ -8,28 +8,27 @@ pipeline {
         IMAGE_NAME = "stockpilot-backend"
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
-
+    
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-
+        
         stage('Workspace') {
             steps {
                 sh 'pwd'
                 sh 'ls -la'
             }
         }
-
+        
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
             }
         }
-
+        
         stage('Login to Amazon ECR') {
             steps {
                 sh '''
@@ -41,7 +40,7 @@ pipeline {
                 '''
             }
         }
-
+        
         stage('Tag Docker Image') {
             steps {
                 sh '''
@@ -51,14 +50,14 @@ pipeline {
                 '''
             }
         }
-    }
-}
-         stage('Push Docker Image') {
+
+        stage('Push Docker Image') {
             steps {
                 sh '''
                 docker push \
                 ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${IMAGE_TAG}
-           '''
+                '''
+            }
+        }
     }
 }
-

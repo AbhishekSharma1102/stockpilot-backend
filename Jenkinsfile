@@ -46,7 +46,7 @@ pipeline {
                 sh '''
                 docker tag \
                 ${IMAGE_NAME}:${IMAGE_TAG} \
-                ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${IMAGE_TAG}
+                ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}://{ECR_REPOSITORY}:${IMAGE_TAG}
                 '''
             }
         }
@@ -55,7 +55,7 @@ pipeline {
             steps {
                 sh '''
                 docker push \
-                ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${IMAGE_TAG}
+                ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}://{ECR_REPOSITORY}:${IMAGE_TAG}
                 '''
             }
         }
@@ -84,10 +84,20 @@ pipeline {
                     .registeredAt, 
                     .registeredBy
                   ) | 
-                  .containerDefinitions[0].image = "'${AWS_ACCOUNT_ID}'.dkr.ecr.'${AWS_REGION}'.amazonaws.com/'${ECR_REPOSITORY}':'${IMAGE_TAG}'"
+                  .containerDefinitions[0].image = "'${AWS_ACCOUNT_ID}'.dkr.ecr.'${AWS_REGION}'://{ECR_REPOSITORY}':'${IMAGE_TAG}'"
                 ' task-definition.json > new-task-definition.json
+                '''
+            }
+        }
+
+        stage('Register Task Definition') {
+            steps {
+                sh '''
+                aws ecs register-task-definition \
+                --cli-input-json file://new-task-definition.json
                 '''
             }
         }
     }
 }
+

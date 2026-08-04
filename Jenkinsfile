@@ -80,5 +80,25 @@ pipeline {
                 '''
             }
         }
+        stage('Register Task Definition') {
+            steps {
+                sh '''
+                aws ecs register-task-definition \
+                --cli-input-json file://new-task-definition.json
+                '''
+            }
+        }
+        stage('Update ECS Service') {
+            steps {
+                sh '''
+                aws ecs update-service \
+                --cluster stockpilot-dev-cluster \
+                --service stockpilot-dev-service \
+                --task-definition stockpilot-dev-task \
+                --force-new-deployment
+                '''
+            }
+        }
     }
 }
+

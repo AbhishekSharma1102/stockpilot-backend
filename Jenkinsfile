@@ -42,20 +42,21 @@ pipeline {
         }
         
         stage('Tag Docker Image') {
-            steps {
-                sh '''
-                docker tag \
-                ${IMAGE_NAME}:${IMAGE_TAG} \
-                ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}://{ECR_REPOSITORY}:${IMAGE_TAG}
-                '''
-            }
-        }
+    steps {
+        sh '''
+        docker tag \
+        ${IMAGE_NAME}:${IMAGE_TAG} \
+        ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${IMAGE_TAG}
+        '''
+    }
+}
+
 
         stage('Push Docker Image') {
             steps {
                 sh '''
                 docker push \
-                ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}://{ECR_REPOSITORY}:${IMAGE_TAG}
+                ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${IMAGE_TAG}
                 '''
             }
         }
@@ -84,7 +85,7 @@ pipeline {
                     .registeredAt, 
                     .registeredBy
                   ) | 
-                  .containerDefinitions[0].image = "'${AWS_ACCOUNT_ID}'.dkr.ecr.'${AWS_REGION}'://{ECR_REPOSITORY}':'${IMAGE_TAG}'"
+                  .containerDefinitions[0].image = "'${AWS_ACCOUNT_ID}'.dkr.ecr.'${AWS_REGION}'.amazonaws.com/${ECR_REPOSITORY}':'${IMAGE_TAG}'"
                 ' task-definition.json > new-task-definition.json
                 '''
             }
